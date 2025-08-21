@@ -55,8 +55,109 @@ def get_current_weather(location: str):
         }
     except Exception as e:
         return {"error": str(e)}
+    
 
-tools = [get_current_weather]
+class ForecastInput(BaseModel):
+    location: str = Field(description="City and country, e.g., 'Berlin, Germany'")
+    days: int = Field(default=3, description="Number of days for forecast (1–7)")
+
+@tool("get_weather_forecast", args_schema=ForecastInput, return_direct=True)
+def get_weather_forecast(location: str, days: int = 3):
+    """Get daily weather forecast for a location (up to 7 days)."""
+    try:
+        if days < 1 or days > 7:
+            return {"error": "Days must be between 1 and 7."}
+
+        place = geolocator.geocode(location, timeout=10)
+        if not place:
+            return {"error": f"Location not found: {location}"}
+
+        url = (
+            f"https://api.open-meteo.com/v1/forecast"
+            f"?latitude={place.latitude}&longitude={place.longitude}"
+            f"&daily=temperature_2m_max,temperature_2m_min,precipitation_sum"
+            f"&forecast_days={days}&timezone=auto"
+        )
+        resp = requests.get(url, timeout=20)
+        resp.raise_for_status()
+        data = resp.json()
+        return data.get("daily", {})
+    except Exception as e:
+        return {"error": str(e)}
+    
+
+class AirQualityInput(BaseModel):
+    location: str = Field(description="City and country, e.g., 'Berlin, Germany'")
+
+@tool("get_air_quality", args_schema=AirQualityInput, return_direct=True)
+def get_air_quality(location: str):
+    """Get current air quality data (AQI, PM2.5, PM10, Ozone, etc.) for a location."""
+    try:
+        place = geolocator.geocode(location, timeout=10)
+        if not place:
+            return {"error": f"Location not found: {location}"}
+
+        url = (
+            f"https://air-quality-api.open-meteo.com/v1/air-quality"
+            f"?latitude={place.latitude}&longitude={place.longitude}"
+            f"&hourly=pm10,pm2_5,carbon_monoxide,ozone,nitrogen_dioxide,sulphur_dioxide,us_aqi"
+        )
+        resp = requests.get(url, timeout=20)
+        resp.raise_for_status()
+        data = resp.json()
+        hourly = data.get("hourly", {})
+
+        return {
+            "pm2_5": hourly.get("pm2_5", ["N/A"])[0],
+            "pm10": hourly.get("pm10", ["N/A"])[0],
+            "ozone": hourly.get("ozone", ["N/A"])[0],
+            "carbon_monoxide": hourly.get("carbon_monoxide", ["N/A"])[0],
+            "us_aqi": hourly.get("us_aqi", ["N/A"])[0],
+        }
+    except Exception as e:
+        return {"error": str(e)}
+    
+
+class AlertInput(BaseModel):
+    location: str = Field(description="City and country, e.g., 'Berlin, Germany'")
+
+@tool("get_weather_alerts", args_schema=AlertInput, return_direct=True)
+def get_weather_alerts(location: str):
+    """Check for severe weather warnings like storms, floods, or heatwaves."""
+    try:
+        place = geolocator.geocode(location, timeout=10)
+        if not place:
+            return {"error": f"Location not found: {location}"}
+
+        url = (
+            f"https://api.open-meteo.com/v1/forecast"
+            f"?latitude={place.latitude}&longitude={place.longitude}"
+            f"&daily=weathercode&forecast_days=1&timezone=auto"
+        )
+        resp = requests.get(url, timeout=20)
+        resp.raise_for_status()
+        data = resp.json()
+        weather_codes = data.get("daily", {}).get("weathercode", [])
+
+        alerts = []
+        if 95 in weather_codes:
+            alerts.append("⚡ Thunderstorm warning")
+        if 96 in weather_codes or 99 in weather_codes:
+            alerts.append("🌧️ Severe rain or hail warning")
+        if not alerts:
+            alerts = ["✅ No severe weather alerts today"]
+
+        return {"alerts": alerts}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+tools = [
+    get_current_weather,
+    get_weather_alerts,
+    get_air_quality,
+    get_weather_forecast,
+]
 tools_by_name = {t.name: t for t in tools}
 
 # --- Model (Gemini 2.5) ---
@@ -74,11 +175,25 @@ model = llm.bind_tools(tools)
 
 # --- Nodes ---
 SYSTEM_PROMPT = """You are a helpful weather agent.
-- If the user asks for the current weather, call the tool `get_current_weather` with a city and country.
+
+You have access to the following tools:
+- get_current_weather: Get the current weather for a given city and country.
+- get_weather_forecast: Get the weather forecast for 1–7 days.
+- get_weather_alerts: Check for severe weather alerts (storms, floods, heatwaves).
+- get_air_quality: Get current air quality (AQI, PM2.5, PM10, Ozone, etc.).
+
+Instructions:
+- If the user asks for the current weather, call `get_current_weather`.
+- If the user asks about weather for upcoming days (tomorrow, next 3 days, weekend, etc.), call `get_weather_forecast`.
+- If the user asks about warnings, alerts, storms, floods, or heatwaves, call `get_weather_alerts`.
+- If the user asks about air quality, pollution, or AQI, call `get_air_quality`.
+
+Guidelines:
 - If the location is missing, ask the user for it.
-- After receiving tool results, summarize the current weather clearly.
-- Keep answers concise.
+- Always summarize tool results in clear, concise language.
+- Keep answers short but informative (1–3 sentences).
 """
+
 
 def call_model(state: AgentState, config: RunnableConfig):
     messages = [SystemMessage(content=SYSTEM_PROMPT)] + list(state["messages"])
