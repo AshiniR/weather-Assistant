@@ -1,6 +1,7 @@
 
 import os
 import json
+import re
 from typing import Annotated, Sequence, TypedDict
 from dotenv import load_dotenv
 from geopy.geocoders import Nominatim
@@ -13,7 +14,7 @@ from langchain_core.tools import tool
 from langchain_core.runnables import RunnableConfig
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-# --- Persistent memory (chat history, last location, last date) ---
+# Persistent memory (chat history, last location, last date) 
 MEMORY_FILE = os.path.join(os.path.dirname(__file__), "memory.json")
 def load_memory():
     try:
@@ -32,44 +33,8 @@ last_location = memory["last_location"]
 last_date = memory["last_date"]
 load_dotenv()
 
-# --- Persistent memory (chat history, last location, last date) ---
-MEMORY_FILE = os.path.join(os.path.dirname(__file__), "memory.json")
-def load_memory():
-    try:
-        with open(MEMORY_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return {"chat_memory": [], "last_location": None, "last_date": None}
 
-def save_memory(memory):
-    with open(MEMORY_FILE, "w", encoding="utf-8") as f:
-        json.dump(memory, f, ensure_ascii=False, indent=2)
-
-memory = load_memory()
-chat_memory = memory["chat_memory"]
-last_location = memory["last_location"]
-last_date = memory["last_date"]
-load_dotenv()
-from typing import Annotated, Sequence, TypedDict
-
-from dotenv import load_dotenv
-load_dotenv()
-
-from geopy.geocoders import Nominatim
-import requests
-from pydantic import BaseModel, Field
-
-from langgraph.graph import StateGraph, END
-from langgraph.graph.message import add_messages
-
-from langchain_core.messages import BaseMessage, SystemMessage, ToolMessage
-from langchain_core.tools import tool
-from langchain_core.runnables import RunnableConfig
-
-from langchain_google_genai import ChatGoogleGenerativeAI
-
-
-# --- Agent State ---
+# Agent State 
 class AgentState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], add_messages]
     number_of_steps: int
@@ -94,12 +59,12 @@ def detect_intent(user_query: str) -> str:
         return "unknown"
 
 
-# --- Location Parsing Helpers ---
+# Location Parsing Helpers 
 def parse_location(user_input: str):
     """Extract city and country if provided, else return just the first part."""
-    import re
-    # Remove trailing slashes and extra whitespace
-    user_input = user_input.replace('/', ' ').strip()
+    
+    # Remove all punctuation/marks and trim spaces
+    user_input = re.sub(r'[^\w\s]', '', user_input).strip()
     # Try to extract after 'in <location>' or 'at <location>'
     match = re.search(r'\b(?:in|at)\s+([A-Za-z\s]+)', user_input, re.IGNORECASE)
     if match:
@@ -178,8 +143,7 @@ class AlertInput(BaseModel):
     location: str = Field(description="City and optionally country, e.g., 'New York, USA'")
 
 
-# --- Tools ---
-# --- Tools with proper docstrings and safe location handling ---
+# Tools 
 
 @tool("get_current_weather", args_schema=WeatherInput, return_direct=True)
 def get_current_weather(location: str):
@@ -309,7 +273,7 @@ tools = [get_current_weather, get_forecast, clothing_suggestion, weather_alerts]
 tools_by_name = {t.name: t for t in tools}
 
 
-# --- Model (Gemini 2.5) ---
+# Model (Gemini 2.5)
 api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
     raise RuntimeError("GEMINI_API_KEY not set")
@@ -323,7 +287,7 @@ llm = ChatGoogleGenerativeAI(
 model = llm.bind_tools(tools)
 
 
-# --- Nodes ---
+# Nodes 
 SYSTEM_PROMPT = """You are a helpful weather assistant.
 You can use the following tools:
 - get_current_weather → for live temperature/windspeed
@@ -351,7 +315,7 @@ def call_tool(state: AgentState):
     return {"messages": outputs, "number_of_steps": state.get("number_of_steps", 0) + 1}
 
 
-# --- Edges ---
+# Edges 
 def should_continue(state: AgentState):
     last = state["messages"][-1]
     if not getattr(last, "tool_calls", []):
@@ -359,7 +323,7 @@ def should_continue(state: AgentState):
     return "continue"
 
 
-# --- Build LangGraph ---
+# Build LangGraph 
 workflow = StateGraph(AgentState)
 workflow.add_node("llm", call_model)
 workflow.add_node("tools", call_tool)
@@ -369,9 +333,31 @@ workflow.add_edge("tools", "llm")
 graph = workflow.compile()
 
 
-# --- Run Once ---
+
 def run_once(prompt: str):
     global last_location, last_date
+
+    # Friendly greetings and polite messages
+    greetings = [
+        "hi", "hello", "hey", "good morning", "good afternoon", "good evening",
+        "how are you", "how's it going"
+    ]
+    farewells = [
+        "bye", "see you", "good night", "have a nice day", "take care", "see you later","thank you", "thanks"
+    ]
+    if any(farewell in prompt.lower() for farewell in farewells):
+        response = "😊 Have a nice day! If you need weather info again, just say hi!"
+        chat_memory.append((prompt, response))
+        memory["chat_memory"] = chat_memory
+        save_memory(memory)
+        return response
+    if any(greet in prompt.lower() for greet in greetings):
+        response = "👋 Hi! How can I help you with the weather today?"
+        chat_memory.append((prompt, response))
+        memory["chat_memory"] = chat_memory
+        save_memory(memory)
+        return response
+
     intent = detect_intent(prompt)
 
     # Check for chat history request
@@ -386,10 +372,9 @@ def run_once(prompt: str):
             reply += f"{i}. You: {u}\n   Bot: {a}\n"
         return reply
 
-    # --- Context-aware follow-up: fill missing location/date ---
-    import re
+    # Context-aware follow-up: fill missing location/date 
     # If user says 'What about tomorrow?' or 'And in Galle?' etc.
-    # --- Generic context-aware location for all tools that use a location ---
+    # Generic context-aware location for all tools that use a location ---
     city, country = parse_location(prompt)
     # If no city found, use last_location from memory (context-aware for all tools)
     if (not city or city.lower() in ["", "?", "there", "here", "it", "that", "this", "what about bob wall"]) and memory.get("last_location"):
@@ -425,7 +410,7 @@ def run_once(prompt: str):
             prompt += f" {date_str}"
 
     try:
-        # --- Current Weather ---
+        # Current Weather 
         if intent == "current_weather":
             data = get_current_weather.invoke({"location": prompt})
             if "need_country" in data:
@@ -459,7 +444,7 @@ def run_once(prompt: str):
             save_memory(memory)
             return response
 
-        # --- Clothing Suggestion ---
+        # Clothing Suggestion 
         elif intent == "clothing":
             data = clothing_suggestion.invoke({"location": prompt})
             if "need_country" in data:
@@ -478,7 +463,7 @@ def run_once(prompt: str):
             save_memory(memory)
             return response
 
-        # --- Weather Alerts ---
+        # Weather Alerts 
         if intent == "forecast":
             # Always pass a valid location string
             location_str = prompt

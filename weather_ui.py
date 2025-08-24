@@ -10,7 +10,7 @@ st.markdown(
 
 st.write("Ask me about the weather, forecasts, clothing suggestions, or weather news!")
 
-# --- Example Queries Section ---
+# Example Queries Section 
 with st.expander("💡 Example Queries"):
     st.markdown("""
     - 🌤️ **Current Weather:** `What's the weather in Colombo?`  
@@ -19,11 +19,11 @@ with st.expander("💡 Example Queries"):
     - 📰 **Weather News / Alerts:** `Are there any weather warnings in New York?`
     """)
 
-# --- Initialize chat history ---
+# Initialize chat history 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# --- Chat Display ---
+# Chat Display
 chat_container = st.container()
 
 with chat_container:
@@ -56,7 +56,7 @@ with chat_container:
             unsafe_allow_html=True,
         )
 
-# --- Input Box ---
+# Input Box 
 with st.form(key="chat_form", clear_on_submit=True):
     user_input = st.text_input("Type your message:", "")
     submit = st.form_submit_button("Send")

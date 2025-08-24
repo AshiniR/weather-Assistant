@@ -119,8 +119,40 @@
     [
       "know tomorrow",
       "❓ Sorry, I can only answer weather-related questions such as current weather, forecasts, clothing suggestions, or weather alerts for a location."
+    ],
+    [
+      "Jaffna tomorrow",
+      "🌍 Weather in Jaffna:\n🌡️ Temperature: 28.9°C, Condition: 1\n💨 Wind: 17.6 km/h\n💧 Humidity: N/A%"
+    ],
+    [
+      "Jaffna today",
+      "👕 Clothing Suggestion for Jaffna:\nComfortable clothes like a t-shirt and jeans are fine."
+    ],
+    [
+      "jaffna",
+      "✅ No weather alerts for Jaffna."
+    ],
+    [
+      "day tomorrow",
+      "❓ Sorry, I can only answer weather-related questions such as current weather, forecasts, clothing suggestions, or weather alerts for a location."
+    ],
+    [
+      "hi tomorrow",
+      "❓ Sorry, I can only answer weather-related questions such as current weather, forecasts, clothing suggestions, or weather alerts for a location."
+    ],
+    [
+      "hi",
+      "👋 Hi! How can I help you with the weather today?"
+    ],
+    [
+      "you tomorrow",
+      "❓ Sorry, I can only answer weather-related questions such as current weather, forecasts, clothing suggestions, or weather alerts for a location."
+    ],
+    [
+      "thank you",
+      "😊 Have a nice day! If you need weather info again, just say hi!"
     ]
   ],
-  "last_location": "Moratuwa",
+  "last_location": "jaffna",
   "last_date": "tomorrow"
 }
