@@ -63,18 +63,18 @@ streamlit run weather_ui.py
 
 Then chat naturally:
 
-👤 User: What's the weather in Colombo?
-🤖 Bot: 🌍 Weather in Colombo:
+* 👤 User: What's the weather in Colombo?
+* 🤖 Bot: 🌍 Weather in Colombo:
         🌡️ Temperature: 27°C, Condition: Clear Sky
         💨 Wind: 16 km/h
         💧 Humidity: 70%
 
-👤 User: What about tomorrow?
-🤖 Bot: 📅 Forecast for tomorrow in Colombo:
+* 👤 User: What about tomorrow?
+* 🤖 Bot: 📅 Forecast for tomorrow in Colombo:
         🗓️ 2025-08-25: 🌡️ 26°C - 31°C, 🌧️ 5 mm rain
 
-👤 User: What should I wear in Berlin today?
-🤖 Bot: 👕 Clothing Suggestion for Berlin:
+* 👤 User: What should I wear in Berlin today?
+* 🤖 Bot: 👕 Clothing Suggestion for Berlin:
         Wear a light jacket or sweater.
 
 ## 📖 Example Interactions
