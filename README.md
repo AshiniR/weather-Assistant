@@ -25,6 +25,7 @@ It remembers chat history, last location, and last date for context-aware follow
 * Persistent Memory – Saved in memory.json
 
 # 📂 Project Structure
+```bash
 weather-Assistant/
 │── weather_agent.py       
 │── weather_ui.py         
@@ -34,35 +35,41 @@ weather-Assistant/
 │── README.md             
 │── .gitignore            
 └── .venv/    
-
+```
 # ⚙️ Setup
 1. Clone the repo
+```bash
 git clone https://github.com/your-username/weather-assistant.git
 cd weather-assistant
-
-2. Create virtual environment
+```
+3. Create virtual environment
+```bash
 python -m venv venv
 source venv/bin/activate   # Mac/Linux
 venv\Scripts\activate      # Windows
+```
 
-3. Install dependencies
+5. Install dependencies
+```bash
 pip install -r requirements.txt
+```
 
-4. Add .env file
+7. Add .env file
 
 Create a .env file in the project root:
-
+```bash
 GEMINI_API_KEY=your_google_gemini_api_key
+```
 
 ▶️ Usage
 
 Run the assistant:
-
+```bash
 streamlit run weather_ui.py
-
+```
 
 Then chat naturally:
-
+```bash
 * 👤 User: What's the weather in Colombo?
 * 🤖 Bot: 🌍 Weather in Colombo:
         🌡️ Temperature: 27°C, Condition: Clear Sky
@@ -76,7 +83,7 @@ Then chat naturally:
 * 👤 User: What should I wear in Berlin today?
 * 🤖 Bot: 👕 Clothing Suggestion for Berlin:
         Wear a light jacket or sweater.
-
+```
 ## 📖 Example Interactions
 
 * Current Weather → “What’s the weather in New York?”
