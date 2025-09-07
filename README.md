@@ -39,7 +39,7 @@ weather-Assistant/
 # ⚙️ Setup
 1. Clone the repo
 ```bash
-git clone https://github.com/your-username/weather-assistant.git
+git clone https://github.com/AshiniR/weather-assistant.git
 cd weather-assistant
 ```
 3. Create virtual environment
