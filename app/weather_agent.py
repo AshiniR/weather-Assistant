@@ -33,30 +33,3 @@ graph_builder.add_edge("tools", "chatbot")
 graph_builder.add_edge(START, "chatbot")
 graph_builder.add_edge("chatbot", END)
 graph = graph_builder.compile()
-
-def stream_graph_updates(user_input: str, conversation_messages):
-    # Add user message to conversation
-    conversation_messages.append({"role": "user", "content": user_input})
-    state = {"messages": conversation_messages}
-    
-    for event in graph.stream(state):
-        for value in event.values():
-            # Update conversation_messages with the latest state
-            conversation_messages[:] = value["messages"]
-            print("Assistant:", value["messages"][-1].content)
-
-conversation_messages = []
-
-while True:
-    try:
-        user_input = input("User: ")
-        if user_input.lower() in ["quit", "exit", "q"]:
-            print("Goodbye!")
-            break
-        stream_graph_updates(user_input, conversation_messages)
-    except:
-        # fallback if input() is not available
-        user_input = "What do you know about LangGraph?"
-        print("User: " + user_input)
-        stream_graph_updates(user_input)
-        break
