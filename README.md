@@ -15,23 +15,23 @@ A intelligent weather chatbot built with LangChain, LangGraph, and Streamlit tha
 ## 🛠️ Tech Stack
 
 ### Backend
-Python 3.8+ - Core programming language 
-LangChain - AI application framework 
-LangGraph - Graph-based conversation flow 
-Google Gemini 2.5 Pro - Large Language Model 
-Pydantic - Data validation and serialization 
+* Python 3.8+ - Core programming language 
+* LangChain - AI application framework 
+* LangGraph - Graph-based conversation flow 
+* Google Gemini 2.5 Pro - Large Language Model 
+* Pydantic - Data validation and serialization 
 
 ### APIs & Data Sources
-Open-Meteo API - Weather data (free, no API key required) 
-Nominatim (OpenStreetMap) - Geocoding services 
-Geopy - Geographic location handling
+* Open-Meteo API - Weather data (free, no API key required) 
+* Nominatim (OpenStreetMap) - Geocoding services 
+* Geopy - Geographic location handling
 
 ### Frontend
-Streamlit - Web UI framework 
+* Streamlit - Web UI framework 
 
 ### Development Tools
-python-dotenv - Environment variable management 
-Requests - HTTP client for API calls 
+* python-dotenv - Environment variable management 
+* Requests - HTTP client for API calls 
   
 
 # 📂 Project Structure
@@ -101,11 +101,11 @@ streamlit run app/weather_agentUI.py
 ```
 
 ## 📖 Example Queries
-"What's the weather in Paris?"
-"Give me a 3-day forecast for Tokyo"
-"What should I wear in London today?"
-"Are there any weather warnings in New York?"
-"What about tomorrow?" (follow-up context)
+* "What's the weather in Paris?"
+* "Give me a 3-day forecast for Tokyo"
+* "What should I wear in London today?"
+* "Are there any weather warnings in New York?"
+* "What about tomorrow?" (follow-up context)
 
 ## Memory Features
 * Session Memory: Remembers conversation within current session
