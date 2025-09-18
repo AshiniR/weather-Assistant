@@ -1,40 +1,72 @@
 # 🌦️ Weather Assistant
 
-An AI-powered conversational assistant that provides current weather, forecasts, clothing suggestions, and severe weather alerts for any city.
-It remembers chat history, last location, and last date for context-aware follow-ups (e.g., “What about tomorrow?”).
+A intelligent weather chatbot built with LangChain, LangGraph, and Streamlit that provides current weather information, forecasts, clothing suggestions, and weather alerts.
 
-## ✨ Features
+##  Features
 
-* 🌤️ Current Weather – Live temperature, windspeed, humidity, condition.
-* 📅 Forecasts – Up to 7-day daily forecasts with min/max temperatures & precipitation.
-* 👕 Clothing Suggestions – Outfit advice depending on temperature & wind.
-* 🚨 Severe Weather Alerts – Warnings for storms, floods, heatwaves, etc.
-* 🧠 Memory – Remembers last location/date for follow-ups like:
-      “What about tomorrow?”
-* 💬 Friendly Chat – Responds to greetings and farewells.
-* 📝 Chat History – Retrieve previous Q&A logs.
+* 🌤️ Current Weather: Get real-time weather for any location
+* 📅 Weather Forecasts: Multi-day weather predictions (1-7 days)
+* 👕 Clothing Suggestions: AI-powered outfit recommendations based on weather
+* 🚨 Weather Alerts: Severe weather warnings and advisories
+* 💬 Context-Aware Chat: Remember previous locations and follow-up questions
+* 💾 Persistent Memory: Chat history saved across sessions
+* 🌐 Web Interface: Clean Streamlit UI for easy interaction
 
 ## 🛠️ Tech Stack
 
-* Python 3.10+
-* LangGraph + LangChain – Orchestrating model & tools
-* Google Gemini 2.5 Pro – LLM backend (ChatGoogleGenerativeAI)
-* Open-Meteo API – Weather & forecast data
-* Geopy (Nominatim) – Geocoding cities into latitude/longitude
-* dotenv – Manage API keys via .env
-* Persistent Memory – Saved in memory.json
+### Backend
+Python 3.8+ - Core programming language 
+LangChain - AI application framework 
+LangGraph - Graph-based conversation flow 
+Google Gemini 2.5 Pro - Large Language Model 
+Pydantic - Data validation and serialization 
+
+### APIs & Data Sources
+Open-Meteo API - Weather data (free, no API key required) 
+Nominatim (OpenStreetMap) - Geocoding services 
+Geopy - Geographic location handling
+
+### Frontend
+Streamlit - Web UI framework 
+
+### Development Tools
+python-dotenv - Environment variable management 
+Requests - HTTP client for API calls 
+  
 
 # 📂 Project Structure
 ```bash
 weather-Assistant/
-│── weather_agent.py       
-│── weather_ui.py         
-│── memory.json           
-│── requirements.txt      
-│── .env                  
-│── README.md             
-│── .gitignore            
-└── .venv/    
+│── app/
+│ ├── core/
+│ │ ├── init.py
+│ │ ├── config.py
+│ │
+│ ├── models/
+│ │ ├── init.py
+│ │ ├── agentState.py
+│ │ ├── alertInput.py
+│ │ ├── clothingInput.py
+│ │ ├── forecastInput.py
+│ │ └── weatherInput.py
+│ │
+│ ├── tools/
+│ │ ├── init.py
+│ │ └── tools.py
+│ │
+│ ├── utils/
+│ │ ├── init.py
+│ │ └── weather.py
+│ │
+│ ├── init.py
+| ├── weather_agent.py
+│ └── weather_agentUI.py
+│
+├── .env
+├── .gitignore
+├── README.md
+├── requirements.txt
+└── venv/ # Virtual environment (not mandatory to commit)  
 ```
 # ⚙️ Setup
 1. Clone the repo
@@ -65,34 +97,21 @@ GEMINI_API_KEY=your_google_gemini_api_key
 
 Run the assistant:
 ```bash
-streamlit run weather_ui.py
+streamlit run app/weather_agentUI.py
 ```
 
-Then chat naturally:
-```bash
-* 👤 User: What's the weather in Colombo?
-* 🤖 Bot: 🌍 Weather in Colombo:
-        🌡️ Temperature: 27°C, Condition: Clear Sky
-        💨 Wind: 16 km/h
-        💧 Humidity: 70%
+## 📖 Example Queries
+"What's the weather in Paris?"
+"Give me a 3-day forecast for Tokyo"
+"What should I wear in London today?"
+"Are there any weather warnings in New York?"
+"What about tomorrow?" (follow-up context)
 
-* 👤 User: What about tomorrow?
-* 🤖 Bot: 📅 Forecast for tomorrow in Colombo:
-        🗓️ 2025-08-25: 🌡️ 26°C - 31°C, 🌧️ 5 mm rain
+## Memory Features
+* Session Memory: Remembers conversation within current session
+* Context Awareness: Understands follow-up questions like "What about tomorrow?"
+* Location Context: Remembers last mentioned location for follow-ups
 
-* 👤 User: What should I wear in Berlin today?
-* 🤖 Bot: 👕 Clothing Suggestion for Berlin:
-        Wear a light jacket or sweater.
-```
-## 📖 Example Interactions
-
-* Current Weather → “What’s the weather in New York?”
-* Forecast → “3-day forecast for London” / “What about tomorrow?”
-* Alerts → “Any weather warnings in Tokyo?”
-* Clothing Advice → “What should I wear in Paris today?”
-*  Memory → “And in Galle?” (uses last query context)
-* History → “Show my chat history”
-
-## 👨‍💻 Author
+##  Author
 
 Developed by Ashini Dhananjana ✨
