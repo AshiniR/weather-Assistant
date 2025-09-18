@@ -2,7 +2,7 @@
 
 A intelligent weather chatbot built with LangChain, LangGraph, and Streamlit that provides current weather information, forecasts, clothing suggestions, and weather alerts.
 
-##  Features
+## ✨ Features
 
 * 🌤️ Current Weather: Get real-time weather for any location
 * 📅 Weather Forecasts: Multi-day weather predictions (1-7 days)
@@ -66,7 +66,7 @@ weather-Assistant/
 ├── .gitignore
 ├── README.md
 ├── requirements.txt
-└── venv/ # Virtual environment (not mandatory to commit)  
+└── venv/ 
 ```
 # ⚙️ Setup
 1. Clone the repo
@@ -107,11 +107,11 @@ streamlit run app/weather_agentUI.py
 * "Are there any weather warnings in New York?"
 * "What about tomorrow?" (follow-up context)
 
-## Memory Features
+## 🧠 Memory Features
 * Session Memory: Remembers conversation within current session
 * Context Awareness: Understands follow-up questions like "What about tomorrow?"
 * Location Context: Remembers last mentioned location for follow-ups
 
-##  Author
+## 👩‍💻 Author
 
-Developed by Ashini Dhananjana ✨
+Developed by Ashini Dhananjana 
